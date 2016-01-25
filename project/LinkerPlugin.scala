@@ -44,6 +44,13 @@ object LinkerPlugin {
       }
     }
 
+    def erasesToAny(cls: String): Boolean = {
+      cls == ir.Definitions.ObjectClass || {
+        val info = infoByName(cls)
+        info == null || info.kind == ClassKind.RawJSType || info.kind.isJSClass
+      }
+    }
+
     val ReflectConstructorsClass =
       ir.Definitions.encodeClassName("linkingreflection.ReflectConstructors")
     val ReflectionClass =
@@ -75,44 +82,45 @@ object LinkerPlugin {
     def makeConstructorData(cls: ClassInfo, ctor: MethodInfo)(
         implicit pos: ir.Position): Tree = {
 
-      ctor.encodedName match {
-        case "init___I__T" =>
-          New(ClassType(ConstructorClass),
-              Ident("init___jl_Class__sjs_js_Array__sjs_js_Dynamic", None),
-              List(
-                  ClassOf(ClassType("Llinkingreflection_SomeConstructible")),
-                  JSArrayConstr(List(
-                      ClassOf(ClassType("I")),
-                      ClassOf(ClassType("T")))),
-                  Closure(
-                      Nil,
-                      List(
-                          ParamDef(Ident("arg1", None), AnyType, mutable = false, rest = false),
-                          ParamDef(Ident("arg2", None), AnyType, mutable = false, rest = false)),
-                      New(ClassType("Llinkingreflection_SomeConstructible"),
-                          Ident("init___I__T", None),
-                          List(
-                              Unbox(VarRef(Ident("arg1", None))(AnyType), 'I'),
-                              AsInstanceOf(VarRef(Ident("arg2", None))(AnyType), ClassType("T")))),
-                      Nil)))
+      val (_, paramRefTypes, _) = ir.Definitions.decodeMethodName(ctor.encodedName)
 
-        case "init___T" =>
-          New(ClassType(ConstructorClass),
-              Ident("init___jl_Class__sjs_js_Array__sjs_js_Dynamic", None),
-              List(
-                  ClassOf(ClassType("Llinkingreflection_SomeConstructible")),
-                  JSArrayConstr(List(
-                      ClassOf(ClassType("T")))),
-                  Closure(
-                      Nil,
-                      List(
-                          ParamDef(Ident("arg1", None), AnyType, mutable = false, rest = false)),
-                      New(ClassType("Llinkingreflection_SomeConstructible"),
-                          Ident("init___T", None),
-                          List(
-                              AsInstanceOf(VarRef(Ident("arg1", None))(AnyType), ClassType("T")))),
-                      Nil)))
+      val params =
+        for (i <- (1 to paramRefTypes.size).toList)
+          yield ParamDef(Ident("arg" + i, None), AnyType, mutable = false, rest = false)
+
+      val actualArgs = for ((param, paramRefType) <- params.zip(paramRefTypes)) yield {
+        val paramRef = param.ref
+
+        paramRefType match {
+          case ClassType(paramRefCls) =>
+            if (ir.Definitions.isPrimitiveClass(paramRefCls)) {
+              assert(paramRefCls.length == 1)
+              Unbox(paramRef, paramRefCls.charAt(0))
+            } else if (erasesToAny(paramRefCls)) {
+              paramRef
+            } else {
+              AsInstanceOf(paramRef, paramRefType)
+            }
+
+          case ArrayType(_, _) =>
+            AsInstanceOf(paramRef, paramRefType)
+        }
       }
+
+      val classType = ClassType(cls.encodedName)
+
+      New(ClassType(ConstructorClass),
+          Ident("init___jl_Class__sjs_js_Array__sjs_js_Dynamic", None),
+          List(
+              ClassOf(classType),
+              JSArrayConstr(paramRefTypes.map(ClassOf(_))),
+              Closure(
+                  Nil,
+                  params,
+                  New(classType,
+                      Ident(ctor.encodedName, None),
+                      actualArgs),
+                  Nil)))
     }
 
     def transformReflectionClass(
