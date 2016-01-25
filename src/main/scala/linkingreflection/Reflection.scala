@@ -20,6 +20,7 @@ object Reflection {
   // private[Reflection] for a predictable IR name
   private[Reflection] def listAllCtors(): js.Array[Constructor] = ???
 
+  @noinline // I receive a ClassTag, but I'm really no good to inline
   def createInstanceFor[T: ClassTag](clazz: Class[_],
       args: immutable.Seq[(Class[_], AnyRef)]): T = {
 
