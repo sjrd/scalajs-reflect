@@ -1,0 +1,3 @@
+package linkingreflection
+
+trait ReflectConstructors
