@@ -205,10 +205,6 @@ final class ReflectionLinker(underlying: GenLinker,
       val newInfo =
         generateClassInfo(newClassDef)
 
-      val stdout = new java.io.PrintWriter(System.out)
-      new ir.Printers.IRTreePrinter(stdout).printTopLevelTree(newClassDef)
-      stdout.flush()
-
       new PatchedMemVirtualScalaJSIRFile(irFile, newInfo, newClassDef)
     }
 
