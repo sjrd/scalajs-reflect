@@ -6,26 +6,17 @@ import ir.Infos._
 import ir.Trees._
 import ir.Types._
 
-import org.scalajs.core.tools.sem._
-import org.scalajs.core.tools.javascript.ESLevel
 import org.scalajs.core.tools.io._
 import org.scalajs.core.tools.logging.Logger
-import org.scalajs.core.tools.linker._
-import org.scalajs.core.tools.linker.analyzer.SymbolRequirement
+import org.scalajs.core.tools.linker.GenLinker
 
 object LinkerPlugin {
-  class CustomLinker(underlying: GenLinker) extends GenLinker {
-    def semantics: Semantics = underlying.semantics
-    def esLevel: ESLevel = underlying.esLevel
+  final class ReflectionLinker(underlying: GenLinker)
+      extends IRPatchingLinker(underlying) {
 
-    def linkUnit(irFiles: Seq[VirtualScalaJSIRFile],
-        symbolRequirements: SymbolRequirement, logger: Logger): LinkingUnit = {
-      underlying.linkUnit(patchIRFiles(irFiles), symbolRequirements, logger)
-    }
-
-    def link(irFiles: Seq[VirtualScalaJSIRFile],
-        output: WritableVirtualJSFile, logger: Logger): Unit = {
-      underlying.link(patchIRFiles(irFiles), output, logger)
+    protected def patchIRFiles(irFiles: Seq[VirtualScalaJSIRFile],
+        logger: Logger): Seq[VirtualScalaJSIRFile] = {
+      LinkerPlugin.patchIRFiles(irFiles)
     }
   }
 

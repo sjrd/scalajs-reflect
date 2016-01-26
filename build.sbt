@@ -41,7 +41,7 @@ def linkerSettings(key: TaskKey[Attributed[File]]): Seq[Setting[_]] = Seq(
       val underlying = Linker(semantics, outputMode, withSourceMap,
           opts.disableOptimizer, opts.parallel, opts.useClosureCompiler,
           frontendConfig, backendConfig)
-      new LinkerPlugin.CustomLinker(underlying)
+      new LinkerPlugin.ReflectionLinker(underlying)
     }
 
     new ClearableLinker(newLinker, opts.batchMode)
