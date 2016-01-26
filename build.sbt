@@ -23,19 +23,17 @@ lazy val `scalajs-reflection` = project.in(file(".")).
     scalaJSOptimizerOptions ~= { _.withCheckScalaJSIR(true) },
 
     scalaJSReflectSelectors ++= Seq(
-      selectDescendentClasses("linkingreflection.FindClassByName") -> reflectClassByName(),
-      selectDescendentClasses("linkingreflection.ReflectConstructors") -> reflectDeclaredConstructors(),
-      selectDescendentClasses("linkingreflection.AccessModule") -> reflectModuleAccessor()
-    ),
-
-    scalaJSReflectSelectors ++= Seq(
       // ReflectionTest.getClassForName()
       selectSingleClass("linkingreflection.ExactGetClassForName") -> reflectClassByName(),
       selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName(),
       
       // AkkaLikeReflectionTest.getClassFor()
       selectSingleClass("linkingreflection.AkkaGetClassForName") -> reflectClassByName(),
+      
+      // AkkaLikeReflectionTest.createInstanceFor()
       selectSingleClass("linkingreflection.AkkaSomeConstructible") -> reflectDeclaredConstructors(),
+      
+      // AkkaLikeReflectionTest.getObjectFor()
       selectSingleClass("linkingreflection.AkkaGetObjectFor$") -> reflectClassByName(),
       selectSingleClass("linkingreflection.AkkaGetObjectFor$") -> reflectModuleAccessor()
     )
