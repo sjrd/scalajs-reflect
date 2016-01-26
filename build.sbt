@@ -1,54 +1,22 @@
-import org.scalajs.core.tools.linker._
-import frontend._
-import backend._
 
-import org.scalajs.sbtplugin.ScalaJSPluginInternal._
+val commonSettings: Seq[Setting[_]] = Seq(
+  version := "0.0.1-SNAPSHOT",
 
-enablePlugins(ScalaJSPlugin)
-
-name := "linking-reflection-for-scalajs"
-version := "0.0.1-SNAPSHOT"
-
-scalaVersion := "2.11.7"
-scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf-8")
-
-scalaJSOptimizerOptions ~= { _.withCheckScalaJSIR(true) }
-
-def linkerSettings(key: TaskKey[Attributed[File]]): Seq[Setting[_]] = Seq(
-  scalaJSLinker in key := {
-    val opts = (scalaJSOptimizerOptions in key).value
-
-    val semantics = (scalaJSSemantics in key).value
-    val outputMode = (scalaJSOutputMode in key).value
-    val withSourceMap = (emitSourceMaps in key).value
-
-    val relSourceMapBase = {
-      if ((relativeSourceMaps in key).value)
-        Some((artifactPath in key).value.getParentFile.toURI())
-      else
-        None
-    }
-
-    val frontendConfig = LinkerFrontend.Config()
-      .withCheckIR(opts.checkScalaJSIR)
-
-    val backendConfig = LinkerBackend.Config()
-      .withRelativizeSourceMapBase(relSourceMapBase)
-      .withCustomOutputWrapper(scalaJSOutputWrapper.value)
-      .withPrettyPrint(opts.prettyPrintFullOptJS)
-
-    val newLinker = { () =>
-      val underlying = Linker(semantics, outputMode, withSourceMap,
-          opts.disableOptimizer, opts.parallel, opts.useClosureCompiler,
-          frontendConfig, backendConfig)
-      new LinkerPlugin.ReflectionLinker(underlying)
-    }
-
-    new ClearableLinker(newLinker, opts.batchMode)
-  }
+  scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf-8")
 )
 
-inConfig(Compile)(linkerSettings(fastOptJS))
-inConfig(Compile)(linkerSettings(fullOptJS))
-inConfig(Test)(linkerSettings(fastOptJS))
-inConfig(Test)(linkerSettings(fullOptJS))
+lazy val `sbt-scalajs-reflection` = project.in(file("sbt-scalajs-reflection")).
+  settings(commonSettings: _*).
+  settings(
+    sbtPlugin := true,
+    addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.6")
+  )
+
+lazy val `scalajs-reflection` = project.in(file(".")).
+  enablePlugins(ScalaJSPlugin).
+  enablePlugins(ScalaJSReflectionPlugin).
+  settings(
+    scalaVersion := "2.11.7",
+
+    scalaJSOptimizerOptions ~= { _.withCheckScalaJSIR(true) }
+  )

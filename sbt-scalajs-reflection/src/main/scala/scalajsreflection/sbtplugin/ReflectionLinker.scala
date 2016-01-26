@@ -1,3 +1,5 @@
+package scalajsreflection.sbtplugin
+
 import java.net.URI
 
 import org.scalajs.core.ir
@@ -10,18 +12,11 @@ import org.scalajs.core.tools.io._
 import org.scalajs.core.tools.logging.Logger
 import org.scalajs.core.tools.linker.GenLinker
 
-object LinkerPlugin {
-  final class ReflectionLinker(underlying: GenLinker)
-      extends IRPatchingLinker(underlying) {
+final class ReflectionLinker(underlying: GenLinker)
+    extends IRPatchingLinker(underlying) {
 
-    protected def patchIRFiles(irFiles: Seq[VirtualScalaJSIRFile],
-        logger: Logger): Seq[VirtualScalaJSIRFile] = {
-      LinkerPlugin.patchIRFiles(irFiles)
-    }
-  }
-
-  private def patchIRFiles(
-      irFiles: Seq[VirtualScalaJSIRFile]): Seq[VirtualScalaJSIRFile] = {
+  protected def patchIRFiles(irFiles: Seq[VirtualScalaJSIRFile],
+      logger: Logger): Seq[VirtualScalaJSIRFile] = {
 
     val infos = irFiles.map(_.info).toList
     val infoByName = infos.map(info => info.encodedName -> info).toMap.withDefault(_ => null)

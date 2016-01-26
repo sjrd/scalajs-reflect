@@ -1,3 +1,5 @@
+package scalajsreflection.sbtplugin
+
 import org.scalajs.core.tools.sem._
 import org.scalajs.core.tools.javascript.ESLevel
 import org.scalajs.core.tools.io._
