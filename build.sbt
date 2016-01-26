@@ -15,6 +15,7 @@ lazy val `sbt-scalajs-reflection` = project.in(file("sbt-scalajs-reflection")).
 lazy val `scalajs-reflection` = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
   enablePlugins(ScalaJSReflectionPlugin).
+  enablePlugins(ScalaJSJUnitPlugin).
   settings(
     scalaVersion := "2.11.7"
   ).
@@ -25,5 +26,11 @@ lazy val `scalajs-reflection` = project.in(file(".")).
       selectDescendentClasses("linkingreflection.FindClassByName") -> reflectClassByName(),
       selectDescendentClasses("linkingreflection.ReflectConstructors") -> reflectDeclaredConstructors(),
       selectDescendentClasses("linkingreflection.AccessModule") -> reflectModuleAccessor()
+    ),
+
+    scalaJSReflectSelectors ++= Seq(
+      // ReflectionTest.getClassForName()
+      selectSingleClass("linkingreflection.ExactGetClassForName") -> reflectClassByName(),
+      selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName()
     )
   )))
