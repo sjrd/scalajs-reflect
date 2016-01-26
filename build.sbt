@@ -29,13 +29,18 @@ lazy val `scalajs-reflection` = project.in(file(".")).
       // ReflectionTest.getClassForName()
       selectSingleClass("linkingreflection.ExactGetClassForName") -> reflectClassByName(),
       selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName(),
-      
+
+      // ReflectionTest.loadModule()
+      selectSingleClass("linkingreflection.ExactAccessModule$") -> reflectModuleAccessor(),
+      selectSingleClass("linkingreflection.ExactAccessModuleParent") -> reflectModuleAccessor(),
+      selectDescendentClasses("linkingreflection.AccessModuleAncestor") -> reflectModuleAccessor(),
+
       // AkkaLikeReflectionTest.getClassFor()
       selectSingleClass("linkingreflection.AkkaGetClassForName") -> reflectClassByName(),
-      
+
       // AkkaLikeReflectionTest.createInstanceFor()
       selectSingleClass("linkingreflection.AkkaSomeConstructible") -> reflectDeclaredConstructors(),
-      
+
       // AkkaLikeReflectionTest.getObjectFor()
       selectSingleClass("linkingreflection.AkkaGetObjectFor$") -> reflectClassByName(),
       selectSingleClass("linkingreflection.AkkaGetObjectFor$") -> reflectModuleAccessor()
