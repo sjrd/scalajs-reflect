@@ -1,5 +1,7 @@
 package linkingreflection
 
+import scala.language.existentials
+
 import scala.collection.immutable
 import scala.reflect.{ClassTag, classTag}
 import scala.util._
