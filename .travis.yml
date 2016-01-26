@@ -1,7 +1,7 @@
 sudo: false
 language: scala
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION run
+  - sbt ++$TRAVIS_SCALA_VERSION test:run
 scala:
   - 2.10.6
   - 2.11.7
