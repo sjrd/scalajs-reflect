@@ -1,5 +1,8 @@
 package linkingreflection
 
+import scala.reflect.{ClassTag, classTag}
+import scala.util._
+
 import scala.scalajs.js
 
 object Main extends js.JSApp {
@@ -28,34 +31,22 @@ object Main extends js.JSApp {
         classOf[SomeConstructible],
         List(classOf[Char] -> ('A': Character))))
 
-    try {
-      show(AkkaLikeReflection.createInstanceFor[SomeConstructible](
+    expect[NoSuchMethodException] {
+      AkkaLikeReflection.createInstanceFor[SomeConstructible](
           classOf[SomeConstructible],
-          List(classOf[List[_]] -> List(42, 53))))
-    } catch {
-      case _: NoSuchMethodException =>
-        println("Caught NoSuchMethodException")
-        println()
+          List(classOf[List[_]] -> List(42, 53)))
     }
 
     println(AkkaLikeReflection.getClassFor[FindClassByName](
         "linkingreflection.FindClassByName"))
     println()
 
-    try {
+    expect[ClassCastException] {
       AkkaLikeReflection.getClassFor[String]("linkingreflection.FindClassByName")
-    } catch {
-      case e: ClassCastException =>
-        println("Caught ClassCastException: " + e.getMessage)
-        println()
     }
 
-    try {
+    expect[ClassNotFoundException] {
       AkkaLikeReflection.getClassFor[String]("linkingreflection.DoesNotExist")
-    } catch {
-      case e: ClassNotFoundException =>
-        println("Caught ClassNotFoundException: " + e.getMessage)
-        println()
     }
 
     println(AkkaLikeReflection.getObjectFor[FindClassByName](
@@ -64,28 +55,33 @@ object Main extends js.JSApp {
         "linkingreflection.SomeAccessibleObject$"))
     println()
 
-    try {
+    expect[ClassCastException] {
       AkkaLikeReflection.getObjectFor[String](
-          "linkingreflection.SomeAccessibleObject")
-    } catch {
-      case e: ClassCastException =>
-        println("Caught ClassCastException: " + e.getMessage)
-        println()
+          "linkingreflection.SomeAccessibleObject$")
     }
 
-    try {
+    expect[ClassNotFoundException] {
+      AkkaLikeReflection.getObjectFor[String](
+          "linkingreflection.SomeAccessibleObject")
+    }
+
+    expect[ClassNotFoundException] {
       AkkaLikeReflection.getObjectFor[String]("linkingreflection.DoesNotExist")
-    } catch {
-      case e: ClassNotFoundException =>
-        println("Caught ClassNotFoundException: " + e.getMessage)
-        println()
     }
   }
 
-  def show(obj: SomeConstructible): Unit = {
+  def show(objTry: Try[SomeConstructible]): Unit = {
+    val obj = objTry.get
     println(obj.getClass())
     println(obj.x)
     println(obj.y)
+    println()
+  }
+
+  def expect[T <: Throwable: ClassTag](objTry: Try[_]): Unit = {
+    println("expecting " + classTag[T].runtimeClass)
+    val e = objTry.failed.filter(classTag[T].runtimeClass.isInstance(_)).get
+    println("Caught: " + e)
     println()
   }
 }
