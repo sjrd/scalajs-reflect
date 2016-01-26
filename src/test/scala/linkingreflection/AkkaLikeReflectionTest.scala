@@ -12,7 +12,7 @@ import TestUtils._
 trait AkkaGetClassForNameAncestor
 class AkkaGetClassForName extends AkkaGetClassForNameAncestor
 
-final case class AkkaSomeConstructible(val x: Int, val y: String) {
+final case class AkkaSomeConstructible(x: Int, y: String) {
   def this(s: String) = this(s.length, s)
 
   def this(o: Any) = this(o.toString())

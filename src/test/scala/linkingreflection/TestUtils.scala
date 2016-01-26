@@ -6,6 +6,12 @@ import org.junit.Assert._
 
 object TestUtils {
 
+  def assertRefArrayEquals(expecteds: Array[_ <: AnyRef],
+      actuals: Array[_ <: AnyRef]): Unit = {
+    assertArrayEquals(expecteds.asInstanceOf[Array[AnyRef]],
+        actuals.asInstanceOf[Array[AnyRef]])
+  }
+
   def assertSuccess(expected: Any, value: Try[Any]): Unit =
     assertEquals(Success(expected), value)
 

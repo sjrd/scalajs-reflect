@@ -30,6 +30,10 @@ lazy val `scalajs-reflection` = project.in(file(".")).
       selectSingleClass("linkingreflection.ExactGetClassForName") -> reflectClassByName(),
       selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName(),
 
+      // ReflectionTest.getDeclaredConstructors()
+      selectSingleClass("linkingreflection.ExactGetDeclaredConstructors") -> reflectDeclaredConstructors(),
+      selectDescendentClasses("linkingreflection.GetDeclaredConstructorsAncestor") -> reflectDeclaredConstructors(),
+
       // ReflectionTest.loadModule()
       selectSingleClass("linkingreflection.ExactAccessModule$") -> reflectModuleAccessor(),
       selectSingleClass("linkingreflection.ExactAccessModuleParent") -> reflectModuleAccessor(),
