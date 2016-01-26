@@ -31,6 +31,9 @@ lazy val `scalajs-reflection` = project.in(file(".")).
     scalaJSReflectSelectors ++= Seq(
       // ReflectionTest.getClassForName()
       selectSingleClass("linkingreflection.ExactGetClassForName") -> reflectClassByName(),
-      selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName()
+      selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName(),
+      
+      // AkkaLikeReflectionTest.getClassFor()
+      selectSingleClass("linkingreflection.AkkaGetClassForName") -> reflectClassByName()
     )
   )))
