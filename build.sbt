@@ -34,6 +34,7 @@ lazy val `scalajs-reflection` = project.in(file(".")).
       selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName(),
       
       // AkkaLikeReflectionTest.getClassFor()
-      selectSingleClass("linkingreflection.AkkaGetClassForName") -> reflectClassByName()
+      selectSingleClass("linkingreflection.AkkaGetClassForName") -> reflectClassByName(),
+      selectSingleClass("linkingreflection.AkkaSomeConstructible") -> reflectDeclaredConstructors()
     )
   )))
