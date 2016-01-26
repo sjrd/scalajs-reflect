@@ -24,6 +24,9 @@ final case class AkkaSomeConstructible(val x: Int, val y: String) {
   def this(c: Char) = this(c.toInt, c.toString)
 }
 
+trait AkkaGetObjectForAncestor
+object AkkaGetObjectFor extends AkkaGetObjectForAncestor
+
 class AkkaLikeReflectionTest {
 
   import linkingreflection.{AkkaLikeReflection => AkkaReflect}
@@ -123,6 +126,54 @@ class AkkaLikeReflectionTest {
       case e: NoSuchMethodException
           if e.getMessage == (classOf[AkkaSomeConstructible].getName +
               ".<init>(java.lang.String, int, [Ljava.lang.Object;)") =>
+    }
+
+  }
+
+  @Test
+  def getObjectFor(): Unit = {
+    assertSuccess(
+        AkkaGetObjectFor,
+        AkkaReflect.getObjectFor[AkkaGetObjectFor.type](
+            "linkingreflection.AkkaGetObjectFor$"))
+
+    assertSuccess(
+        AkkaGetObjectFor,
+        AkkaReflect.getObjectFor[AkkaGetObjectForAncestor](
+            "linkingreflection.AkkaGetObjectFor$"))
+
+    assertSuccess(
+        AkkaGetObjectFor,
+        AkkaReflect.getObjectFor[AkkaGetObjectForAncestor](
+            "linkingreflection.AkkaGetObjectFor"))
+
+    assertSuccess(
+        AkkaGetObjectFor,
+        AkkaReflect.getObjectFor[AnyRef](
+            "linkingreflection.AkkaGetObjectFor$"))
+
+    assertFailureSuchThat(
+        AkkaReflect.getObjectFor[String](
+            "linkingreflection.AkkaGetObjectFor$")) {
+      case e: ClassCastException =>
+    }
+
+    assertFailureSuchThat(
+        AkkaReflect.getObjectFor[AkkaGetObjectForAncestor](
+            "linkingreflection.DoesNotExist$")) {
+      case e: ClassNotFoundException =>
+    }
+
+    assertFailureSuchThat(
+        AkkaReflect.getObjectFor[AnyRef](
+            "java.lang.Object")) {
+      case e: ClassNotFoundException =>
+    }
+
+    assertFailureSuchThat(
+        AkkaReflect.getObjectFor[AnyRef](
+            "linkingreflection.AkkaGetClassForName")) {
+      case e: NoSuchFieldException if e.getMessage == "MODULE$" =>
     }
 
   }
