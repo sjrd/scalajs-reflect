@@ -1,7 +1,7 @@
 package linkingreflection
 
 import scala.collection.immutable
-import scala.reflect.ClassTag
+import scala.reflect.{ClassTag, classTag}
 
 import scala.scalajs.js
 import js.JSConverters._
@@ -20,6 +20,12 @@ object Reflection {
   // private[Reflection] for a predictable IR name
   private[Reflection] def listAllCtors(): js.Array[Constructor] = ???
 
+  private val classesByName = makeClassesByName()
+
+  // Filled in by the linker plugin
+  // private[Reflection] for a predictable IR name
+  private[Reflection] def makeClassesByName(): js.Dictionary[Class[_]] = ???
+
   @noinline // I receive a ClassTag, but I'm really no good to inline
   def createInstanceFor[T: ClassTag](clazz: Class[_],
       args: immutable.Seq[(Class[_], AnyRef)]): T = {
@@ -36,5 +42,17 @@ object Reflection {
       case None =>
         throw new java.lang.NoSuchMethodException
     }
+  }
+
+  @noinline // I receive a ClassTag, but I'm really no good to inline
+  def getClassFor[T: ClassTag](fqcn: String): Class[_ <: T] = {
+    val result = classesByName.getOrElse(fqcn,
+        throw new ClassNotFoundException("Cannot find class " + fqcn))
+
+    val expected = classTag[T].runtimeClass
+    if (!expected.isAssignableFrom(result))
+      throw new ClassCastException(expected + " is not assignable from " + result)
+
+    result.asInstanceOf[Class[_ <: T]]
   }
 }

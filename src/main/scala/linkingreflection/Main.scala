@@ -35,6 +35,26 @@ object Main extends js.JSApp {
     } catch {
       case _: NoSuchMethodException =>
         println("Caught NoSuchMethodException")
+        println()
+    }
+
+    println(Reflection.getClassFor[FindClassByName]("linkingreflection.FindClassByName"))
+    println()
+
+    try {
+      Reflection.getClassFor[String]("linkingreflection.FindClassByName")
+    } catch {
+      case e: ClassCastException =>
+        println("Caught ClassCastException: " + e.getMessage)
+        println()
+    }
+
+    try {
+      Reflection.getClassFor[String]("linkingreflection.DoesNotExist")
+    } catch {
+      case e: ClassNotFoundException =>
+        println("Caught ClassNotFoundException: " + e.getMessage)
+        println()
     }
   }
 

@@ -53,6 +53,9 @@ object LinkerPlugin {
 
     val ReflectConstructorsClass =
       ir.Definitions.encodeClassName("linkingreflection.ReflectConstructors")
+    val FindClassByNameClass =
+      ir.Definitions.encodeClassName("linkingreflection.FindClassByName")
+
     val ReflectionClass =
       ir.Definitions.encodeClassName("linkingreflection.Reflection$")
     val ConstructorClass =
@@ -132,15 +135,34 @@ object LinkerPlugin {
                   Nil)))
     }
 
+    def makeClassesByName()(implicit pos: ir.Position): Tree = {
+      val items = for {
+        info <- infos
+        if implements(info, FindClassByNameClass)
+      } yield {
+        val decodedName = ir.Definitions.decodeClassName(info.encodedName)
+        StringLiteral(decodedName) -> ClassOf(ClassType(info.encodedName))
+      }
+
+      JSObjectConstr(items)
+    }
+
     def transformReflectionClass(
         irFile: VirtualScalaJSIRFile): VirtualScalaJSIRFile = {
       val classDef = irFile.tree
 
+      def fillMethodWith(m: MethodDef, body: ir.Position => Tree): MethodDef = {
+        implicit val pos = m.pos
+        val newDef = m.copy(body = body(pos))(m.optimizerHints, None)
+        ir.Hashers.hashMethodDef(newDef)
+      }
+
       val newDefs = classDef.defs.map {
         case m: MethodDef if m.name.name == "listAllCtors__sjs_js_Array" =>
-          implicit val pos = m.pos
-          val newDef = m.copy(body = listAllCtors())(m.optimizerHints, None)
-          ir.Hashers.hashMethodDef(newDef)
+          fillMethodWith(m, listAllCtors()(_))
+
+        case m: MethodDef if m.name.name == "makeClassesByName__sjs_js_Dictionary" =>
+          fillMethodWith(m, makeClassesByName()(_))
 
         case m =>
           m
