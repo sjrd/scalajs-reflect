@@ -10,4 +10,6 @@ class SomeConstructible(val x: Int, val y: String) extends ReflectConstructors {
   def this(array: js.Array[Int]) = this(array.size, array.mkString(", "))
 
   def this(array: Array[Int]) = this(array.size, array.mkString(", "))
+
+  def this(c: Char) = this(c.toInt, c.toString)
 }

@@ -24,6 +24,10 @@ object Main extends js.JSApp {
         classOf[SomeConstructible],
         List(classOf[Array[Int]] -> Array(42, 53))))
 
+    show(Reflection.createInstanceFor[SomeConstructible](
+        classOf[SomeConstructible],
+        List(classOf[Char] -> ('A': Character))))
+
     try {
       show(Reflection.createInstanceFor[SomeConstructible](
           classOf[SomeConstructible],

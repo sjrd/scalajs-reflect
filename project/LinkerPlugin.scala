@@ -95,7 +95,16 @@ object LinkerPlugin {
           case ClassType(paramRefCls) =>
             if (ir.Definitions.isPrimitiveClass(paramRefCls)) {
               assert(paramRefCls.length == 1)
-              Unbox(paramRef, paramRefCls.charAt(0))
+              val charCode = paramRefCls.charAt(0)
+              if (charCode == 'C') {
+                // Good old Char, never doing anything like the others
+                Apply(
+                    LoadModule(ClassType("sr_BoxesRunTime$")),
+                    Ident("unboxToChar__O__C", None),
+                    List(paramRef))(IntType)
+              } else {
+                Unbox(paramRef, charCode)
+              }
             } else if (erasesToAny(paramRefCls)) {
               paramRef
             } else {
