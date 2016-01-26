@@ -55,6 +55,8 @@ object LinkerPlugin {
       ir.Definitions.encodeClassName("linkingreflection.ReflectConstructors")
     val FindClassByNameClass =
       ir.Definitions.encodeClassName("linkingreflection.FindClassByName")
+    val AccessModuleClass =
+      ir.Definitions.encodeClassName("linkingreflection.AccessModule")
 
     val ReflectionClass =
       ir.Definitions.encodeClassName("linkingreflection.Reflection$")
@@ -147,6 +149,20 @@ object LinkerPlugin {
       JSObjectConstr(items)
     }
 
+    def listAllModuleAccessors()(implicit pos: ir.Position): Tree = {
+      val items = for {
+        info <- infos
+        if info.kind == ClassKind.ModuleClass && implements(info, AccessModuleClass)
+      } yield {
+        val classType = ClassType(info.encodedName)
+        JSArrayConstr(List(
+            ClassOf(classType),
+            Closure(Nil, Nil, LoadModule(classType), Nil)))
+      }
+
+      JSArrayConstr(items)
+    }
+
     def transformReflectionClass(
         irFile: VirtualScalaJSIRFile): VirtualScalaJSIRFile = {
       val classDef = irFile.tree
@@ -163,6 +179,9 @@ object LinkerPlugin {
 
         case m: MethodDef if m.name.name == "makeClassesByName__sjs_js_Dictionary" =>
           fillMethodWith(m, makeClassesByName()(_))
+
+        case m: MethodDef if m.name.name == "listAllModuleAccessors__sjs_js_Array" =>
+          fillMethodWith(m, listAllModuleAccessors()(_))
 
         case m =>
           m

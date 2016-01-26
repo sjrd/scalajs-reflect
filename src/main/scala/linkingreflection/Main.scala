@@ -56,6 +56,26 @@ object Main extends js.JSApp {
         println("Caught ClassNotFoundException: " + e.getMessage)
         println()
     }
+
+    println(Reflection.getObjectFor[FindClassByName]("linkingreflection.SomeAccessibleObject"))
+    println(Reflection.getObjectFor[FindClassByName]("linkingreflection.SomeAccessibleObject$"))
+    println()
+
+    try {
+      Reflection.getObjectFor[String]("linkingreflection.SomeAccessibleObject")
+    } catch {
+      case e: ClassCastException =>
+        println("Caught ClassCastException: " + e.getMessage)
+        println()
+    }
+
+    try {
+      Reflection.getObjectFor[String]("linkingreflection.DoesNotExist")
+    } catch {
+      case e: ClassNotFoundException =>
+        println("Caught ClassNotFoundException: " + e.getMessage)
+        println()
+    }
   }
 
   def show(obj: SomeConstructible): Unit = {

@@ -26,6 +26,14 @@ object Reflection {
   // private[Reflection] for a predictable IR name
   private[Reflection] def makeClassesByName(): js.Dictionary[Class[_]] = ???
 
+  private val moduleAccessorByClass =
+    listAllModuleAccessors().map(t => t: (Class[_], js.Function0[Any])).toMap
+
+  // Filled in by the linker plugin
+  // private[Reflection] for a predictable IR name
+  private[Reflection]
+  def listAllModuleAccessors(): js.Array[js.Tuple2[Class[_], js.Function0[Any]]] = ???
+
   @noinline // I receive a ClassTag, but I'm really no good to inline
   def createInstanceFor[T: ClassTag](clazz: Class[_],
       args: immutable.Seq[(Class[_], AnyRef)]): T = {
@@ -54,5 +62,17 @@ object Reflection {
       throw new ClassCastException(expected + " is not assignable from " + result)
 
     result.asInstanceOf[Class[_ <: T]]
+  }
+
+  @noinline // I receive a ClassTag, but I'm really no good to inline
+  def getObjectFor[T: ClassTag](fqcn: String): T = {
+    val clazz =
+      if (fqcn.endsWith("$")) getClassFor[T](fqcn)
+      else getClassFor[T](fqcn + "$")
+
+    val accessor = moduleAccessorByClass.getOrElse(clazz,
+        throw new NoSuchFieldException("Cannot load the module of " + clazz))
+
+    accessor().asInstanceOf[T]
   }
 }
