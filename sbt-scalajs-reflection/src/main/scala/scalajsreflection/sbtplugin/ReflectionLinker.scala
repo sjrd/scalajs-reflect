@@ -2,6 +2,8 @@ package scalajsreflection.sbtplugin
 
 import java.net.URI
 
+import scala.collection.immutable
+
 import org.scalajs.core.ir
 import ir.ClassKind
 import ir.Infos._
@@ -12,7 +14,10 @@ import org.scalajs.core.tools.io._
 import org.scalajs.core.tools.logging.Logger
 import org.scalajs.core.tools.linker.GenLinker
 
-final class ReflectionLinker(underlying: GenLinker)
+import ReflectSelectors._
+
+final class ReflectionLinker(underlying: GenLinker,
+    selectors: immutable.Seq[ReflectSelector])
     extends IRPatchingLinker(underlying) {
 
   protected def patchIRFiles(irFiles: Seq[VirtualScalaJSIRFile],
@@ -20,6 +25,12 @@ final class ReflectionLinker(underlying: GenLinker)
 
     val infos = irFiles.map(_.info).toList
     val infoByName = infos.map(info => info.encodedName -> info).toMap.withDefault(_ => null)
+
+    val operationSelectors = {
+      selectors.groupBy(_.operation).map {
+        case (op, selectors) => (op, selectors.map(_.entitySelector).toList)
+      }
+    }
 
     def implements(cls: ClassInfo, ancestorName: String): Boolean = {
       // TODO Memoize this function?
@@ -30,6 +41,23 @@ final class ReflectionLinker(underlying: GenLinker)
       }
     }
 
+    def satisfiesSelector(cls: ClassInfo, selector: EntitySelector): Boolean = {
+      selector match {
+        case SingleClassSelector(fullName) =>
+          cls.encodedName == ir.Definitions.encodeClassName(fullName)
+        case DescendentClassesSelector(ancestorFullName) =>
+          implements(cls, ir.Definitions.encodeClassName(ancestorFullName))
+      }
+    }
+
+    def satisfiesSelectors(cls: ClassInfo, selectors: List[EntitySelector]): Boolean =
+      selectors.exists(s => satisfiesSelector(cls, s))
+
+    def shouldEnableOperation(op: Operation): ClassInfo => Boolean = {
+      val selectors = operationSelectors.getOrElse(op, Nil)
+      cls => satisfiesSelectors(cls, selectors)
+    }
+
     def erasesToAny(cls: String): Boolean = {
       cls == ir.Definitions.ObjectClass || {
         val info = infoByName(cls)
@@ -37,19 +65,14 @@ final class ReflectionLinker(underlying: GenLinker)
       }
     }
 
-    val ReflectConstructorsClass =
-      ir.Definitions.encodeClassName("linkingreflection.ReflectConstructors")
-    val FindClassByNameClass =
-      ir.Definitions.encodeClassName("linkingreflection.FindClassByName")
-    val AccessModuleClass =
-      ir.Definitions.encodeClassName("linkingreflection.AccessModule")
-
     val ReflectionClass =
       ir.Definitions.encodeClassName("linkingreflection.Reflection$")
     val ConstructorClass =
       ir.Definitions.encodeClassName("linkingreflection.Reflection$Constructor")
 
     def listAllCtors()(implicit pos: ir.Position): Tree = {
+      val shouldEnable = shouldEnableOperation(ReflectDeclaredConstructors)
+
       def listCtorsOfClass(info: ClassInfo): List[Tree] = {
         for {
           method <- info.methods
@@ -61,7 +84,7 @@ final class ReflectionLinker(underlying: GenLinker)
 
       val ctorTrees = for {
         info <- infos
-        if info.kind == ClassKind.Class && implements(info, ReflectConstructorsClass)
+        if info.kind == ClassKind.Class && shouldEnable(info)
         ctor <- listCtorsOfClass(info)
       } yield {
         ctor
@@ -124,9 +147,11 @@ final class ReflectionLinker(underlying: GenLinker)
     }
 
     def makeClassesByName()(implicit pos: ir.Position): Tree = {
+      val shouldEnable = shouldEnableOperation(ReflectClassByName)
+
       val items = for {
         info <- infos
-        if implements(info, FindClassByNameClass)
+        if shouldEnable(info)
       } yield {
         val decodedName = ir.Definitions.decodeClassName(info.encodedName)
         StringLiteral(decodedName) -> ClassOf(ClassType(info.encodedName))
@@ -136,9 +161,11 @@ final class ReflectionLinker(underlying: GenLinker)
     }
 
     def listAllModuleAccessors()(implicit pos: ir.Position): Tree = {
+      val shouldEnable = shouldEnableOperation(ReflectModuleAccessor)
+
       val items = for {
         info <- infos
-        if info.kind == ClassKind.ModuleClass && implements(info, AccessModuleClass)
+        if info.kind == ClassKind.ModuleClass && shouldEnable(info)
       } yield {
         val classType = ClassType(info.encodedName)
         JSArrayConstr(List(

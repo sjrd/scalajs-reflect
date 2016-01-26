@@ -16,7 +16,14 @@ lazy val `scalajs-reflection` = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
   enablePlugins(ScalaJSReflectionPlugin).
   settings(
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.7"
+  ).
+  settings(inConfig(Test)(Seq(
+    scalaJSOptimizerOptions ~= { _.withCheckScalaJSIR(true) },
 
-    scalaJSOptimizerOptions ~= { _.withCheckScalaJSIR(true) }
-  )
+    scalaJSReflectSelectors ++= Seq(
+      selectDescendentClasses("linkingreflection.FindClassByName") -> reflectClassByName(),
+      selectDescendentClasses("linkingreflection.ReflectConstructors") -> reflectDeclaredConstructors(),
+      selectDescendentClasses("linkingreflection.AccessModule") -> reflectModuleAccessor()
+    )
+  )))
