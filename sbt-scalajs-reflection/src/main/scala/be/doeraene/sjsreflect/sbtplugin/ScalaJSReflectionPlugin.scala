@@ -23,7 +23,7 @@ object ScalaJSReflectionPlugin extends AutoPlugin {
 
     val scalaJSReflectSelectors = SettingKey[Seq[ReflectSelector]](
         "scalaJSReflectSelectors",
-        "Quickly link all compiled JavaScript into a single file", APlusTask)
+        "Selectors for reflective operations to enable", APlusTask)
 
     def selectSingleClass(fullName: String): EntitySelector =
       SingleClassSelector(fullName)
