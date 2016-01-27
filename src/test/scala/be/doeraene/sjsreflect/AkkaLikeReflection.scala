@@ -6,13 +6,11 @@ import scala.collection.immutable
 import scala.reflect.{ClassTag, classTag}
 import scala.util._
 
-import Reflection._
-
 object AkkaLikeReflection {
 
   @noinline // I receive a ClassTag, but I'm really no good to inline
   def getClassFor[T: ClassTag](fqcn: String): Try[Class[_ <: T]] = {
-    getClassForName(fqcn) match {
+    Reflect.getClassForName(fqcn) match {
       case None =>
         Failure(new ClassNotFoundException("Cannot find class " + fqcn))
 
@@ -29,7 +27,7 @@ object AkkaLikeReflection {
   def createInstanceFor[T: ClassTag](clazz: Class[_],
       args: immutable.Seq[(Class[_], AnyRef)]): Try[T] = {
 
-    val ctors = getDeclaredConstructors(clazz)
+    val ctors = Reflect.getDeclaredConstructors(clazz)
     val expectedParams = args.map(_._1)
 
     ctors.find(_.getParameterTypes().sameElements(expectedParams)) match {
@@ -56,7 +54,7 @@ object AkkaLikeReflection {
 
     classTry.flatMap { clazz =>
       Try {
-        loadModule(clazz) match {
+        Reflect.loadModule(clazz) match {
           case Some(obj) =>
             val t = implicitly[ClassTag[T]].runtimeClass
             if (t.isInstance(obj)) obj

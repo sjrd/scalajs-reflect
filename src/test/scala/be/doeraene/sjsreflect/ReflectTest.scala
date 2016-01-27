@@ -37,7 +37,7 @@ object ExactAccessModuleChild extends ExactAccessModuleParent
 trait AccessModuleAncestor
 object DescendentAccessModule extends AccessModuleAncestor
 
-class ReflectionTest {
+class ReflectTest {
 
   import TestUtils._
 
@@ -45,28 +45,28 @@ class ReflectionTest {
   def getClassForName(): Unit = {
     assertEquals(
         Some(classOf[ExactGetClassForName]),
-        Reflection.getClassForName(s"$pack.ExactGetClassForName"))
+        Reflect.getClassForName(s"$pack.ExactGetClassForName"))
 
     assertEquals(
         Some(classOf[GetClassForNameAncestor]),
-        Reflection.getClassForName(s"$pack.GetClassForNameAncestor"))
+        Reflect.getClassForName(s"$pack.GetClassForNameAncestor"))
 
     assertEquals(
         Some(classOf[DescendentGetClassForName]),
-        Reflection.getClassForName(s"$pack.DescendentGetClassForName"))
+        Reflect.getClassForName(s"$pack.DescendentGetClassForName"))
 
     assertEquals(
         None,
-        Reflection.getClassForName(s"$pack.ExactGetClassForNameChild"))
+        Reflect.getClassForName(s"$pack.ExactGetClassForNameChild"))
 
     assertEquals(
         None,
-        Reflection.getClassForName("java.lang.Object"))
+        Reflect.getClassForName("java.lang.Object"))
   }
 
   @Test
   def getDeclaredConstructors(): Unit = {
-    val ctors1 = Reflection.getDeclaredConstructors(
+    val ctors1 = Reflect.getDeclaredConstructors(
         classOf[ExactGetDeclaredConstructors])
     assertEquals(6, ctors1.length)
 
@@ -112,7 +112,7 @@ class ReflectionTest {
         ExactGetDeclaredConstructors(65, "A"),
         ctors1(5).newInstance('A'))
 
-    val ctors2 = Reflection.getDeclaredConstructors(
+    val ctors2 = Reflect.getDeclaredConstructors(
         classOf[DescendentGetDeclaredConstructors])
     assertEquals(1, ctors2.length)
 
@@ -123,7 +123,7 @@ class ReflectionTest {
         DescendentGetDeclaredConstructors(42),
         ctors2(0).newInstance(42))
 
-    val ctors3 = Reflection.getDeclaredConstructors(
+    val ctors3 = Reflect.getDeclaredConstructors(
         classOf[Object])
     assertEquals(0, ctors3.length)
   }
@@ -137,23 +137,23 @@ class ReflectionTest {
 
     assertEquals(
         Some(ExactAccessModule),
-        Reflection.loadModule(classOfModule[ExactAccessModule.type]))
+        Reflect.loadModule(classOfModule[ExactAccessModule.type]))
 
     assertEquals(
         Some(DescendentAccessModule),
-        Reflection.loadModule(classOfModule[DescendentAccessModule.type]))
+        Reflect.loadModule(classOfModule[DescendentAccessModule.type]))
 
     assertEquals(
         None,
-        Reflection.loadModule(classOfModule[ExactAccessModuleChild.type]))
+        Reflect.loadModule(classOfModule[ExactAccessModuleChild.type]))
 
     assertEquals(
         None,
-        Reflection.loadModule(classOfModule[None.type]))
+        Reflect.loadModule(classOfModule[None.type]))
 
     assertEquals(
         None,
-        Reflection.loadModule(classOf[ExactAccessModuleParent]))
+        Reflect.loadModule(classOf[ExactAccessModuleParent]))
   }
 
 }

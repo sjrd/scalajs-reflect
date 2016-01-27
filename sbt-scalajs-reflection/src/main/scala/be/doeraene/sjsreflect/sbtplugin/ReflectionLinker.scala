@@ -22,6 +22,11 @@ final class ReflectionLinker(underlying: GenLinker,
 
   private final val pack = "be.doeraene.sjsreflect"
 
+  private val ReflectClass =
+    ir.Definitions.encodeClassName(s"$pack.Reflect$$")
+  private val ConstructorClass =
+    ir.Definitions.encodeClassName(s"$pack.Constructor")
+
   protected def patchIRFiles(irFiles: Seq[VirtualScalaJSIRFile],
       logger: Logger): Seq[VirtualScalaJSIRFile] = {
 
@@ -66,11 +71,6 @@ final class ReflectionLinker(underlying: GenLinker,
         info == null || info.kind == ClassKind.RawJSType || info.kind.isJSClass
       }
     }
-
-    val ReflectionClass =
-      ir.Definitions.encodeClassName(s"$pack.Reflection$$")
-    val ConstructorClass =
-      ir.Definitions.encodeClassName(s"$pack.Reflection$$Constructor")
 
     def listAllCtors()(implicit pos: ir.Position): Tree = {
       val shouldEnable = shouldEnableOperation(ReflectDeclaredConstructors)
@@ -212,7 +212,7 @@ final class ReflectionLinker(underlying: GenLinker,
 
     for (irFile <- irFiles) yield {
       irFile.info.encodedName match {
-        case ReflectionClass =>
+        case ReflectClass =>
           transformReflectionClass(irFile)
         case _ =>
           irFile

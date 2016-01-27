@@ -6,37 +6,26 @@ import scala.reflect.{ClassTag, classTag}
 import scala.scalajs.js
 import js.JSConverters._
 
-object Reflection {
-  final class Constructor[T] private[Reflection] (
-      private[Reflection] val clazz: Class[T],
-      private[Reflection] val params: js.Array[Class[_]],
-      private[Reflection] val invoke: js.Dynamic) {
-
-    def getParameterTypes(): Array[Class[_]] = params.toArray
-
-    def newInstance(args: Any*): T =
-      invoke(args.asInstanceOf[Seq[js.Any]]: _*).asInstanceOf[T]
-  }
-
+object Reflect {
   private val ctorsByClass =
     listAllCtors().groupBy(_.clazz).withDefault(_ => js.Array())
 
   // Filled in by the linker plugin
-  // private[Reflection] for a predictable IR name
-  private[Reflection] def listAllCtors(): js.Array[Constructor[_]] = ???
+  // private[Reflect] for a predictable IR name
+  private[Reflect] def listAllCtors(): js.Array[Constructor[_]] = ???
 
   private val classesByName = makeClassesByName()
 
   // Filled in by the linker plugin
-  // private[Reflection] for a predictable IR name
-  private[Reflection] def makeClassesByName(): js.Dictionary[Class[_]] = ???
+  // private[Reflect] for a predictable IR name
+  private[Reflect] def makeClassesByName(): js.Dictionary[Class[_]] = ???
 
   private val moduleAccessorsByClass =
     listAllModuleAccessors().map(t => t: (Class[_], js.Function0[Any])).toMap
 
   // Filled in by the linker plugin
-  // private[Reflection] for a predictable IR name
-  private[Reflection]
+  // private[Reflect] for a predictable IR name
+  private[Reflect]
   def listAllModuleAccessors(): js.Array[js.Tuple2[Class[_], js.Function0[Any]]] = ???
 
   def getDeclaredConstructors[T](clazz: Class[T]): Array[Constructor[T]] =
