@@ -41,8 +41,6 @@ val commonSettings: Seq[Setting[_]] = Seq(
   pomIncludeRepository := { _ => false }
 )
 
-val pack = "be.doeraene.sjsreflect"
-
 lazy val `sbt-scalajs-reflection` = project.in(file("sbt-scalajs-reflection")).
   settings(commonSettings: _*).
   settings(
@@ -58,31 +56,4 @@ lazy val `scalajs-reflection` = project.in(file(".")).
   settings(
     scalaVersion := "2.11.7"
   ).
-  settings(inConfig(Test)(Seq(
-    scalaJSOptimizerOptions ~= { _.withCheckScalaJSIR(true) },
-
-    scalaJSReflectSelectors ++= Seq(
-      // ReflectionTest.getClassForName()
-      selectSingleClass(s"$pack.ExactGetClassForName") -> reflectClassByName(),
-      selectDescendentClasses(s"$pack.GetClassForNameAncestor") -> reflectClassByName(),
-
-      // ReflectionTest.getDeclaredConstructors()
-      selectSingleClass(s"$pack.ExactGetDeclaredConstructors") -> reflectDeclaredConstructors(),
-      selectDescendentClasses(s"$pack.GetDeclaredConstructorsAncestor") -> reflectDeclaredConstructors(),
-
-      // ReflectionTest.loadModule()
-      selectSingleClass(s"$pack.ExactAccessModule$$") -> reflectModuleAccessor(),
-      selectSingleClass(s"$pack.ExactAccessModuleParent") -> reflectModuleAccessor(),
-      selectDescendentClasses(s"$pack.AccessModuleAncestor") -> reflectModuleAccessor(),
-
-      // AkkaLikeReflectionTest.getClassFor()
-      selectSingleClass(s"$pack.AkkaGetClassForName") -> reflectClassByName(),
-
-      // AkkaLikeReflectionTest.createInstanceFor()
-      selectSingleClass(s"$pack.AkkaSomeConstructible") -> reflectDeclaredConstructors(),
-
-      // AkkaLikeReflectionTest.getObjectFor()
-      selectSingleClass(s"$pack.AkkaGetObjectFor$$") -> reflectClassByName(),
-      selectSingleClass(s"$pack.AkkaGetObjectFor$$") -> reflectModuleAccessor()
-    )
-  )))
+  settings(TestSettings.testSettings)
