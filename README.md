@@ -1,6 +1,7 @@
 # scalajs-reflection
 
 [![Build Status](https://travis-ci.org/sjrd/scalajs-reflect.svg?branch=master)](https://travis-ci.org/sjrd/scalajs-reflect)
+[![Scala.js](http://scala-js.org/assets/badges/scalajs-0.6.6.svg)](http://scala-js.org/)
 
 scalajs-reflection is a combination of an sbt plugin and a run-time API
 enabling a controlled amount of run-time reflection in Scala.js projects.
