@@ -1,4 +1,4 @@
-package linkingreflection
+package be.doeraene.sjsreflect
 
 import scala.collection.immutable
 import scala.reflect.{ClassTag, classTag}

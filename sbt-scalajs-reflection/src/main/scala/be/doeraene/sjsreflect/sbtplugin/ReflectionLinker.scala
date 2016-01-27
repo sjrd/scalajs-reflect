@@ -1,4 +1,4 @@
-package scalajsreflection.sbtplugin
+package be.doeraene.sjsreflect.sbtplugin
 
 import java.net.URI
 
@@ -19,6 +19,8 @@ import ReflectSelectors._
 final class ReflectionLinker(underlying: GenLinker,
     selectors: immutable.Seq[ReflectSelector])
     extends IRPatchingLinker(underlying) {
+
+  private final val pack = "be.doeraene.sjsreflect"
 
   protected def patchIRFiles(irFiles: Seq[VirtualScalaJSIRFile],
       logger: Logger): Seq[VirtualScalaJSIRFile] = {
@@ -66,9 +68,9 @@ final class ReflectionLinker(underlying: GenLinker,
     }
 
     val ReflectionClass =
-      ir.Definitions.encodeClassName("linkingreflection.Reflection$")
+      ir.Definitions.encodeClassName(s"$pack.Reflection$$")
     val ConstructorClass =
-      ir.Definitions.encodeClassName("linkingreflection.Reflection$Constructor")
+      ir.Definitions.encodeClassName(s"$pack.Reflection$$Constructor")
 
     def listAllCtors()(implicit pos: ir.Position): Tree = {
       val shouldEnable = shouldEnableOperation(ReflectDeclaredConstructors)

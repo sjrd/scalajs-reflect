@@ -1,4 +1,4 @@
-package scalajsreflection.sbtplugin
+package be.doeraene.sjsreflect.sbtplugin
 
 import org.scalajs.core.tools.sem._
 import org.scalajs.core.tools.javascript.ESLevel

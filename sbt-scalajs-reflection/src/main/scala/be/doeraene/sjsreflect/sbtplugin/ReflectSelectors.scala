@@ -1,4 +1,4 @@
-package scalajsreflection.sbtplugin
+package be.doeraene.sjsreflect.sbtplugin
 
 object ReflectSelectors {
   /** A selector to enable some operations on a set of entities.

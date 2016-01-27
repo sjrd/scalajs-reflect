@@ -1,4 +1,4 @@
-package linkingreflection
+package be.doeraene.sjsreflect
 
 import scala.util._
 
@@ -29,34 +29,34 @@ object AkkaGetObjectFor extends AkkaGetObjectForAncestor
 
 class AkkaLikeReflectionTest {
 
-  import linkingreflection.{AkkaLikeReflection => AkkaReflect}
+  import be.doeraene.sjsreflect.{AkkaLikeReflection => AkkaReflect}
 
   @Test
   def getClassFor(): Unit = {
     assertSuccess(
         classOf[AkkaGetClassForName],
         AkkaReflect.getClassFor[AkkaGetClassForName](
-            "linkingreflection.AkkaGetClassForName"))
+            s"$pack.AkkaGetClassForName"))
 
     assertSuccess(
         classOf[AkkaGetClassForName],
         AkkaReflect.getClassFor[AkkaGetClassForNameAncestor](
-            "linkingreflection.AkkaGetClassForName"))
+            s"$pack.AkkaGetClassForName"))
 
     assertSuccess(
         classOf[AkkaGetClassForName],
         AkkaReflect.getClassFor[AnyRef](
-            "linkingreflection.AkkaGetClassForName"))
+            s"$pack.AkkaGetClassForName"))
 
     assertFailureSuchThat(
         AkkaReflect.getClassFor[String](
-            "linkingreflection.AkkaGetClassForName")) {
+            s"$pack.AkkaGetClassForName")) {
       case e: ClassCastException =>
     }
 
     assertFailureSuchThat(
         AkkaReflect.getClassFor[AkkaGetClassForNameAncestor](
-            "linkingreflection.DoesNotExist")) {
+            s"$pack.DoesNotExist")) {
       case e: ClassNotFoundException =>
     }
 
@@ -135,32 +135,32 @@ class AkkaLikeReflectionTest {
     assertSuccess(
         AkkaGetObjectFor,
         AkkaReflect.getObjectFor[AkkaGetObjectFor.type](
-            "linkingreflection.AkkaGetObjectFor$"))
+            s"$pack.AkkaGetObjectFor$$"))
 
     assertSuccess(
         AkkaGetObjectFor,
         AkkaReflect.getObjectFor[AkkaGetObjectForAncestor](
-            "linkingreflection.AkkaGetObjectFor$"))
+            s"$pack.AkkaGetObjectFor$$"))
 
     assertSuccess(
         AkkaGetObjectFor,
         AkkaReflect.getObjectFor[AkkaGetObjectForAncestor](
-            "linkingreflection.AkkaGetObjectFor"))
+            s"$pack.AkkaGetObjectFor"))
 
     assertSuccess(
         AkkaGetObjectFor,
         AkkaReflect.getObjectFor[AnyRef](
-            "linkingreflection.AkkaGetObjectFor$"))
+            s"$pack.AkkaGetObjectFor$$"))
 
     assertFailureSuchThat(
         AkkaReflect.getObjectFor[String](
-            "linkingreflection.AkkaGetObjectFor$")) {
+            s"$pack.AkkaGetObjectFor$$")) {
       case e: ClassCastException =>
     }
 
     assertFailureSuchThat(
         AkkaReflect.getObjectFor[AkkaGetObjectForAncestor](
-            "linkingreflection.DoesNotExist$")) {
+            s"$pack.DoesNotExist$$")) {
       case e: ClassNotFoundException =>
     }
 
@@ -172,7 +172,7 @@ class AkkaLikeReflectionTest {
 
     assertFailureSuchThat(
         AkkaReflect.getObjectFor[AnyRef](
-            "linkingreflection.AkkaGetClassForName")) {
+            s"$pack.AkkaGetClassForName")) {
       case e: NoSuchFieldException if e.getMessage == "MODULE$" =>
     }
 

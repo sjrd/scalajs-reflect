@@ -1,4 +1,4 @@
-package scalajsreflection.sbtplugin
+package be.doeraene.sjsreflect.sbtplugin
 
 import scala.language.implicitConversions
 

@@ -7,6 +7,8 @@ val commonSettings: Seq[Setting[_]] = Seq(
       "-encoding", "utf-8")
 )
 
+val pack = "be.doeraene.sjsreflect"
+
 lazy val `sbt-scalajs-reflection` = project.in(file("sbt-scalajs-reflection")).
   settings(commonSettings: _*).
   settings(
@@ -27,26 +29,26 @@ lazy val `scalajs-reflection` = project.in(file(".")).
 
     scalaJSReflectSelectors ++= Seq(
       // ReflectionTest.getClassForName()
-      selectSingleClass("linkingreflection.ExactGetClassForName") -> reflectClassByName(),
-      selectDescendentClasses("linkingreflection.GetClassForNameAncestor") -> reflectClassByName(),
+      selectSingleClass(s"$pack.ExactGetClassForName") -> reflectClassByName(),
+      selectDescendentClasses(s"$pack.GetClassForNameAncestor") -> reflectClassByName(),
 
       // ReflectionTest.getDeclaredConstructors()
-      selectSingleClass("linkingreflection.ExactGetDeclaredConstructors") -> reflectDeclaredConstructors(),
-      selectDescendentClasses("linkingreflection.GetDeclaredConstructorsAncestor") -> reflectDeclaredConstructors(),
+      selectSingleClass(s"$pack.ExactGetDeclaredConstructors") -> reflectDeclaredConstructors(),
+      selectDescendentClasses(s"$pack.GetDeclaredConstructorsAncestor") -> reflectDeclaredConstructors(),
 
       // ReflectionTest.loadModule()
-      selectSingleClass("linkingreflection.ExactAccessModule$") -> reflectModuleAccessor(),
-      selectSingleClass("linkingreflection.ExactAccessModuleParent") -> reflectModuleAccessor(),
-      selectDescendentClasses("linkingreflection.AccessModuleAncestor") -> reflectModuleAccessor(),
+      selectSingleClass(s"$pack.ExactAccessModule$$") -> reflectModuleAccessor(),
+      selectSingleClass(s"$pack.ExactAccessModuleParent") -> reflectModuleAccessor(),
+      selectDescendentClasses(s"$pack.AccessModuleAncestor") -> reflectModuleAccessor(),
 
       // AkkaLikeReflectionTest.getClassFor()
-      selectSingleClass("linkingreflection.AkkaGetClassForName") -> reflectClassByName(),
+      selectSingleClass(s"$pack.AkkaGetClassForName") -> reflectClassByName(),
 
       // AkkaLikeReflectionTest.createInstanceFor()
-      selectSingleClass("linkingreflection.AkkaSomeConstructible") -> reflectDeclaredConstructors(),
+      selectSingleClass(s"$pack.AkkaSomeConstructible") -> reflectDeclaredConstructors(),
 
       // AkkaLikeReflectionTest.getObjectFor()
-      selectSingleClass("linkingreflection.AkkaGetObjectFor$") -> reflectClassByName(),
-      selectSingleClass("linkingreflection.AkkaGetObjectFor$") -> reflectModuleAccessor()
+      selectSingleClass(s"$pack.AkkaGetObjectFor$$") -> reflectClassByName(),
+      selectSingleClass(s"$pack.AkkaGetObjectFor$$") -> reflectModuleAccessor()
     )
   )))

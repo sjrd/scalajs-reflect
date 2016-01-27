@@ -1,4 +1,4 @@
-package linkingreflection
+package be.doeraene.sjsreflect
 
 import scala.reflect.{ClassTag, classTag}
 
@@ -45,19 +45,19 @@ class ReflectionTest {
   def getClassForName(): Unit = {
     assertEquals(
         Some(classOf[ExactGetClassForName]),
-        Reflection.getClassForName("linkingreflection.ExactGetClassForName"))
+        Reflection.getClassForName(s"$pack.ExactGetClassForName"))
 
     assertEquals(
         Some(classOf[GetClassForNameAncestor]),
-        Reflection.getClassForName("linkingreflection.GetClassForNameAncestor"))
+        Reflection.getClassForName(s"$pack.GetClassForNameAncestor"))
 
     assertEquals(
         Some(classOf[DescendentGetClassForName]),
-        Reflection.getClassForName("linkingreflection.DescendentGetClassForName"))
+        Reflection.getClassForName(s"$pack.DescendentGetClassForName"))
 
     assertEquals(
         None,
-        Reflection.getClassForName("linkingreflection.ExactGetClassForNameChild"))
+        Reflection.getClassForName(s"$pack.ExactGetClassForNameChild"))
 
     assertEquals(
         None,

@@ -1,10 +1,12 @@
-package linkingreflection
+package be.doeraene.sjsreflect
 
 import scala.util._
 
 import org.junit.Assert._
 
 object TestUtils {
+
+  final val pack = "be.doeraene.sjsreflect"
 
   def assertRefArrayEquals(expecteds: Array[_ <: AnyRef],
       actuals: Array[_ <: AnyRef]): Unit = {
