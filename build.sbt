@@ -4,7 +4,7 @@ crossScalaVersions := Seq("2.10.6", "2.11.7", "2.12.0-M3")
 val commonSettings: Seq[Setting[_]] = Seq(
   organization := "be.doeraene",
 
-  version := "0.1.0",
+  version := "0.1.1-SNAPSHOT",
 
   scalacOptions ++= Seq(
       "-deprecation", "-feature", "-Xfatal-warnings",
