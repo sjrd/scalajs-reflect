@@ -14,6 +14,10 @@ object TestSettings {
       selectSingleClass(s"$pack.ExactGetClassForName") -> reflectClassByName(),
       selectDescendentClasses(s"$pack.GetClassForNameAncestor") -> reflectClassByName(),
 
+      // ReflectionTest.enumerateClasses()
+      selectSingleClass(s"$pack.EnumeratedClass") -> reflectEnumerateClass(),
+      selectDescendentClasses(s"$pack.EnumeratedClassAncestor") -> reflectEnumerateClass(),
+
       // ReflectionTest.getDeclaredConstructors()
       selectSingleClass(s"$pack.ExactGetDeclaredConstructors") -> reflectDeclaredConstructors(),
       selectDescendentClasses(s"$pack.GetDeclaredConstructorsAncestor") -> reflectDeclaredConstructors(),

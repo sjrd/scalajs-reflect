@@ -13,6 +13,12 @@ class ExactGetClassForNameChild extends ExactGetClassForName
 trait GetClassForNameAncestor
 class DescendentGetClassForName extends GetClassForNameAncestor
 
+trait EnumeratedClass
+class EnumeratedClassChild extends EnumeratedClass
+
+trait EnumeratedClassAncestor
+class DescendentEnumeratedClass extends EnumeratedClassAncestor
+
 final case class ExactGetDeclaredConstructors(x: Int, y: String) {
   def this(s: String) = this(s.length, s)
 
@@ -62,6 +68,23 @@ class ReflectTest {
     assertEquals(
         None,
         Reflect.getClassForName("java.lang.Object"))
+  }
+
+  @Test
+  def enumerateClasses(): Unit = {
+    assertTrue(
+      Reflect.enumerateClasses.contains(classOf[EnumeratedClass]))
+
+    assertTrue(
+      Reflect.enumerateClasses.contains(classOf[EnumeratedClassAncestor]))
+
+    assertTrue(
+      Reflect.enumerateClasses.contains(classOf[DescendentEnumeratedClass]))
+
+    assertFalse(
+      Reflect.enumerateClasses.contains(classOf[EnumeratedClassChild]))
+
+    assertTrue(Reflect.enumerateClasses.length == 3)
   }
 
   @Test

@@ -1,14 +1,12 @@
 package be.doeraene.sjsreflect
 
-import scala.collection.immutable
-import scala.reflect.{ClassTag, classTag}
-
 import scala.scalajs.js
-import js.JSConverters._
 
 object Reflect {
   private val classesByName =
     makeClassesByName()
+
+  private val classArray = makeClassArray()
 
   private val ctorsByClass =
     listAllCtors().groupBy(_.clazz).withDefault(_ => js.Array())
@@ -22,6 +20,8 @@ object Reflect {
    */
 
   private[Reflect] def makeClassesByName(): js.Dictionary[Class[_]] = stub()
+
+  private[Reflect] def makeClassArray(): js.Array[Class[_]] = stub()
 
   private[Reflect] def listAllCtors(): js.Array[Constructor[_]] = stub()
 
@@ -44,6 +44,9 @@ object Reflect {
    */
   def getClassForName(fqcn: String): Option[Class[_]] =
     classesByName.get(fqcn)
+
+  /** Returns an array of all classes specified by `reflectEnumerateClass()` */
+  def enumerateClasses: Array[Class[_]] = classArray.toArray
 
   /** Lists the constructors declared in a given `Class`.
    *

@@ -34,6 +34,8 @@ object ScalaJSReflectionPlugin extends AutoPlugin {
     def reflectClassByName(): Operation =
       ReflectClassByName
 
+    def reflectEnumerateClass(): Operation = ReflectEnumerateClass
+
     def reflectDeclaredConstructors(): Operation =
       ReflectDeclaredConstructors
 

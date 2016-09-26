@@ -27,6 +27,9 @@ object ReflectSelectors {
   /** Allows to find the selected by its fully qualified name. */
   private[sbtplugin] case object ReflectClassByName extends Operation
 
+  /** Allows classes selected by this modifier to be enumerated as an array */
+  private[sbtplugin] case object ReflectEnumerateClass extends Operation
+
   /** Reflect all the declared constructors of a class.
    *
    *  This operation is silently ignored for classes that are interfaces or
