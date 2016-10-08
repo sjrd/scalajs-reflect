@@ -49,6 +49,7 @@ at the end of its full name, e.g., `"foo.Bar$"`.
 Available operations are:
 
 * `reflectClassByName()`: enables `Reflect.getClassForName`
+* `reflectEnumerateClass()` enables `Reflect.enumerateClasses`
 * `reflectDeclaredConstructors()`: enables `Reflect.getDeclaredConstructors`
 * `reflectModuleAccessor()`: enables `Reflect.loadModule`
 
@@ -57,6 +58,8 @@ Available operations are:
 * `be.doeraene.sjsreflect.Reflect`
   * `Reflect.getClassForName(fqcn: String): Class[_]`:
     find a class by its name
+  * `Reflect.enumerateClasses: Array[Class[_]]`:
+    an array of the specified classes
   * `Reflect.getDeclaredConstructors[T](clazz: Class[T]): Array[Constructor[T]]`:
     lists the declared constructors of the given class
   * `Reflect.loadModule[T](clazz: Class[T]): T`:

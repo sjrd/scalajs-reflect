@@ -162,6 +162,19 @@ final class ReflectionLinker(underlying: GenLinker,
       JSObjectConstr(items)
     }
 
+    def makeClassArray()(implicit pos: ir.Position): Tree = {
+      val shouldEnable = shouldEnableOperation(ReflectEnumerateClass)
+
+      val items = for {
+        info <- infos
+        if shouldEnable(info)
+      } yield {
+        ClassOf(ClassType(info.encodedName))
+      }
+
+      JSArrayConstr(items)
+    }
+
     def listAllModuleAccessors()(implicit pos: ir.Position): Tree = {
       val shouldEnable = shouldEnableOperation(ReflectModuleAccessor)
 
@@ -194,6 +207,9 @@ final class ReflectionLinker(underlying: GenLinker,
 
         case m: MethodDef if m.name.name == "makeClassesByName__sjs_js_Dictionary" =>
           fillMethodWith(m, makeClassesByName()(_))
+
+        case m: MethodDef if m.name.name == "makeClassArray__sjs_js_Array" =>
+          fillMethodWith(m, makeClassArray()(_))
 
         case m: MethodDef if m.name.name == "listAllModuleAccessors__sjs_js_Array" =>
           fillMethodWith(m, listAllModuleAccessors()(_))
