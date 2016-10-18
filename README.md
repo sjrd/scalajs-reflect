@@ -11,7 +11,7 @@ enabling a controlled amount of run-time reflection in Scala.js projects.
 Add the following line to your `project/plugins.sbt` file:
 
 ```scala
-addSbtPlugin("be.doeraene" % "sbt-scalajs-reflection" % "0.1.0")
+addSbtPlugin("be.doeraene" % "sbt-scalajs-reflection" % "0.1.1")
 ```
 
 and the following settings to your `build.sbt` file:
@@ -19,7 +19,7 @@ and the following settings to your `build.sbt` file:
 ```scala
 enablePlugins(ScalaJSReflectionPlugin)
 
-libraryDependencies += "be.doeraene" %%% "scalajs-reflection" % "0.1.0"
+libraryDependencies += "be.doeraene" %%% "scalajs-reflection" % "0.1.1"
 ```
 
 In addition, you need to specify what classes will be reflectible, and what
